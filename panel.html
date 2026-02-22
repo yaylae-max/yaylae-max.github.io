@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CMK Panel</title>
+<style>
+body {font-family: Arial; background:#f4f4f4; margin:0; padding:20px;}
+#loginBox, #panel {max-width:800px; margin:auto; background:white; padding:20px; border-radius:8px;}
+input, button {padding:8px; margin:5px 0;}
+button {cursor:pointer;}
+table {width:100%; border-collapse: collapse; margin-top:20px;}
+th, td {border:1px solid #ccc; padding:8px;}
+th {background:#111; color:white;}
+.hidden {display:none;}
+</style>
+</head>
+<body>
+
+<div id="loginBox">
+<h2>CMK Panel Giriş</h2>
+<input type="password" id="password" placeholder="Şifre">
+<button onclick="login()">Giriş Yap</button>
+<p id="error" style="color:red;"></p>
+</div>
+
+<div id="panel" class="hidden">
+<h2>CMK Müvekkil Paneli</h2>
+
+<input type="text" id="ad" placeholder="Ad Soyad">
+<input type="text" id="dosya" placeholder="Dosya No">
+<input type="text" id="mahkeme" placeholder="Mahkeme">
+<button onclick="ekle()">Ekle</button>
+
+<table>
+<thead>
+<tr>
+<th>Ad</th>
+<th>Dosya</th>
+<th>Mahkeme</th>
+<th>Sil</th>
+</tr>
+</thead>
+<tbody id="liste"></tbody>
+</table>
+
+</div>
+
+<script>
+const sifre = "1234"; // BURAYI DEĞİŞTİR
+
+function login(){
+let girilen = document.getElementById("password").value;
+if(girilen === sifre){
+document.getElementById("loginBox").classList.add("hidden");
+document.getElementById("panel").classList.remove("hidden");
+verileriYukle();
+}else{
+document.getElementById("error").innerText="Şifre yanlış!";
+}
+}
+
+function ekle(){
+let ad = document.getElementById("ad").value;
+let dosya = document.getElementById("dosya").value;
+let mahkeme = document.getElementById("mahkeme").value;
+
+let veriler = JSON.parse(localStorage.getItem("cmk")) || [];
+veriler.push({ad,dosya,mahkeme});
+localStorage.setItem("cmk", JSON.stringify(veriler));
+verileriYukle();
+}
+
+function verileriYukle(){
+let liste = document.getElementById("liste");
+liste.innerHTML="";
+let veriler = JSON.parse(localStorage.getItem("cmk")) || [];
+veriler.forEach((v,i)=>{
+liste.innerHTML += `
+<tr>
+<td>${v.ad}</td>
+<td>${v.dosya}</td>
+<td>${v.mahkeme}</td>
+<td><button onclick="sil(${i})">Sil</button></td>
+</tr>
+`;
+});
+}
+
+function sil(index){
+let veriler = JSON.parse(localStorage.getItem("cmk"));
+veriler.splice(index,1);
+localStorage.setItem("cmk", JSON.stringify(veriler));
+verileriYukle();
+}
+</script>
+
+</body>
+</html>
